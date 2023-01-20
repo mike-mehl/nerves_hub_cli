@@ -83,12 +83,12 @@ defmodule Mix.Tasks.NervesHub.Firmware do
 
       ["publish" | []] ->
         firmware()
-        |> publish_confirm(org, opts)
+        |> publish_confirm(org, product, opts)
 
       ["publish", firmware] when is_binary(firmware) ->
         firmware
         |> Path.expand()
-        |> publish_confirm(org, opts)
+        |> publish_confirm(org, product, opts)
 
       ["delete", uuid] when is_binary(uuid) ->
         delete_confirm(uuid, org, product)
@@ -146,7 +146,7 @@ defmodule Mix.Tasks.NervesHub.Firmware do
     end
   end
 
-  defp publish_confirm(firmware, org, opts) do
+  defp publish_confirm(firmware, org, product, opts) do
     with true <- File.exists?(firmware),
          {:ok, metadata} <- metadata(firmware) do
       Shell.info("------------")
@@ -157,7 +157,6 @@ defmodule Mix.Tasks.NervesHub.Firmware do
       |> Shell.info()
 
       if Shell.yes?("Publish Firmware?") do
-        product = metadata["product"]
         publish(firmware, org, product, opts)
       end
     else
